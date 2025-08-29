@@ -1,0 +1,32 @@
+resource "aws_lb_target_group" "main" {
+    name = "task5-tg"
+    port = 80
+    protocol = "HTTP"
+    vpc_id = aws_vpc.main.id
+    tags = {
+        Environment = var.env
+}
+}
+
+resource "aws_lb_listener" "main" {
+  load_balancer_arn = aws_lb.main.arn
+  port              = "80"
+  protocol          = "HTTP"
+  
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.main.arn
+  }
+}
+resource "aws_lb_listener" "second" {
+  load_balancer_arn = aws_lb.main.arn
+  port              = "443"
+  protocol          = "HTTPS"
+  certificate_arn   = "arn:aws:acm:us-west-2:194704207902:certificate/4c84ba1d-ef89-476e-b251-10bc25cd6f98"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.main.arn
+  }
+}
+
