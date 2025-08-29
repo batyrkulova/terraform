@@ -8,19 +8,27 @@ resource "aws_security_group" "template" {
   }
 }
 
-resource "aws_security_group_rule" "allow_alb_http" {
-  type                     = "ingress"
-  from_port                = 80
-  to_port                  = 80
-  protocol                 = "tcp"
-  security_group_id        = aws_security_group.template.id
-  source_security_group_id = aws_security_group.alb.id
+resource "aws_vpc_security_group_ingress_rule" "in" {
+  security_group_id = aws_security_group.template.id
+  from_port   = 80
+  ip_protocol = "tcp"
+  to_port     = 80
+  referenced_security_group_id = aws_security_group.alb.id 
 }
-resource "aws_security_group_rule" "allow_egress" {
-  type                     = "egress"
-  from_port                = 0
-  to_port                  = 0
-  protocol                 = "-1"
-  security_group_id        = aws_security_group.template.id
-  source_security_group_id = aws_security_group.alb.id
+
+resource "aws_vpc_security_group_egress_rule" "out" {
+  security_group_id = aws_security_group.template.id
+  cidr_ipv4   = "0.0.0.0/0"
+  ip_protocol = "-1"
+  
 }
+
+
+
+
+
+
+
+
+
+

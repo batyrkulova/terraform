@@ -17,3 +17,13 @@ data "aws_ami" "amazon_linux_2023" {
     values = ["hvm"]
   }
 }
+
+
+data "terraform_remote_state" "vpc_state" {
+  backend = "s3"
+  config = {
+    bucket = "apr2025-terraform-session-backend-e"
+    key    = "session3-hw/terraform.tfstate"
+    region = "us-west-2" 
+  }
+}

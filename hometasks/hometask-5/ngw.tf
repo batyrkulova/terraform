@@ -1,5 +1,11 @@
+resource "aws_eip" "nat_eip" {
+      domain = "vpc"
+      tags = {
+        Name = "nat-gateway-eip"
+      }
+    }
 resource "aws_nat_gateway" "ngw" {
-    connectivity_type = "private"
+    allocation_id = aws_eip.nat_eip.id
     subnet_id         = aws_subnet.pub[1].id
 
     tags = {
