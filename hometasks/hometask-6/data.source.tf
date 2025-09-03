@@ -28,8 +28,7 @@ data "terraform_remote_state" "vpc_state" {
   }
 }
 
-data "aws_acm_certificate" "existing_certificate" {
-  domain      = "amsparkle.com"
-  statuses    = ["ISSUED"]
-  most_recent = true
+data "aws_route53_zone" "amsparkle_com" {
+  name         = "amsparkle.com"
+  private_zone = false
 }
