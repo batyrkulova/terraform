@@ -15,5 +15,5 @@ variable "env" {
 }
 
 variable "default_type" {
-    type = bool 
+    type = string 
 }

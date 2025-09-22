@@ -32,5 +32,5 @@ variable "value" {
 }
 
 variable "propagate_at_launch" {
-    type = string
+    type = bool
 }

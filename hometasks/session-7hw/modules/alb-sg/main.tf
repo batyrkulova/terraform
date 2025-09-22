@@ -11,7 +11,7 @@ resource "aws_security_group" "alb" {
 resource "aws_vpc_security_group_ingress_rule" "port-https" {
   for_each = toset(var.ports)
   security_group_id = aws_security_group.alb.id
-  cidr_ipv4         = evar.cidr_ipv4
+  cidr_ipv4         = var.cidr_ipv4
   from_port         = each.value
   ip_protocol       = var.ip_protocol
   to_port           = each.value

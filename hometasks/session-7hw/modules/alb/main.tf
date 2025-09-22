@@ -4,7 +4,5 @@ resource  "aws_lb" "main" {
     load_balancer_type = var.load_balancer_type
     security_groups = [aws_security_group.alb.id]
     subnets = [for s in aws_subnet.pub : s.id]
-    tags = {
-        Environment = var.env
-    }
-} 
+    tags = local.common_tags 
+}

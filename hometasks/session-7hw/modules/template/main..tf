@@ -7,5 +7,5 @@ resource "aws_launch_template" "main" {
     associate_public_ip_address = var.associate_public_ip_address
     security_groups = [aws_security_group.template.id]
   }
-  user_data = var.user_data != "" ? base64encode(var.user_data) : null
+  user_data = var.user_data
 }
