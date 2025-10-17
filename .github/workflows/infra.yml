@@ -2,11 +2,6 @@ name: IaC Workflow 1
 on:
   repository_dispatch:
     types: [trigger-deploy]
-  push:
-    branches: 
-      - main
-
-
 env: 
       TERRAFORM_VERSION: "1.9" 
 jobs:
