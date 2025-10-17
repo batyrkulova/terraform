@@ -1,8 +1,9 @@
 name: IaC Workflow 1
-on: 
-  push:
-    branches:
-      - feature/iac-workflow
+on:
+  repository_dispatch:
+    types: [trigger-deploy]
+
+
 env: 
       TERRAFORM_VERSION: "1.9" 
 jobs:
@@ -10,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run: 
-        working-directory: infra/iac-workflow-1
+        working-directory: terraform/hometasks/my_app@v1
     steps: 
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -40,14 +41,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with: 
           name: my-artifact
-          path: infra/iac-workflow-1/tfplan.txt
+          path: tfplan.txt
   apply:
     needs: plan
     runs-on: ubuntu-latest
     concurrency: production
     defaults:
       run: 
-        working-directory: infra/iac-workflow-1
+        working-directory: terraform/hometasks/my_app@v1
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -73,7 +74,7 @@ jobs:
         
       - name: Terraform Apply the Plan
         run: |   
-          terraform apply tfplan.txt -auto-aprove
+          terraform apply -auto-approve tfplan.txt 
 
       - name: Display JSON Plan
         run: cat tfplan.json
