@@ -1,0 +1,85 @@
+name: IaC Workflow 1
+on: 
+  push:
+    branches:
+      - feature/iac-workflow
+env: 
+      TERRAFORM_VERSION: "1.9" 
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    defaults:
+      run: 
+        working-directory: infra/iac-workflow-1
+    steps: 
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Set up terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+      - name: Terraform version
+        run: terraform version
+      - name: Checks
+        run: | 
+          ls -la
+          pwd
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2    
+      - name: Terraform Init
+        run: terraform init
+      - name: Terraform Validate 
+        run: terraform validate
+      - name: Run terraform plan and save it in a different file 
+        run: terraform plan -out=tfplan.txt
+      - name: Upload 'tfplan.txt'
+        uses: actions/upload-artifact@v4
+        with: 
+          name: my-artifact
+          path: infra/iac-workflow-1/tfplan.txt
+  apply:
+    needs: plan
+    runs-on: ubuntu-latest
+    concurrency: production
+    defaults:
+      run: 
+        working-directory: infra/iac-workflow-1
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2  
+
+      - name: Download Terraform Plan Artifact
+        uses: actions/download-artifact@v4
+        with: 
+          name: my-artifact
+          path: infra/iac-workflow-1  
+      - name: Terraform Init
+        run: terraform init
+      - name: Terraform Show (JSON)
+        run: terraform show -json tfplan.txt > tfplan.json
+        
+      - name: Terraform Apply the Plan
+        run: |   
+          terraform apply tfplan.txt -auto-aprove
+
+      - name: Display JSON Plan
+        run: cat tfplan.json
+     
+      - name: Show the plan
+        run: terraform show tfplan.txt
+
+
+
